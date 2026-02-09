@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tiempo de Tareas</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="shell">
+    <main>
+      <header class="topbar">
+        <h1 class="app-title">Tiempo de Tareas</h1>
+        <div class="switches">
+          <label class="switch">
+            <input id="clockToggle" type="checkbox" checked />
+            <span>Reloj</span>
+          </label>
+          <button id="expandBtn" type="button" class="ghost" title="Abrir en pestaña">↗</button>
+        </div>
+      </header>
+
+      <form id="task-form" aria-describedby="calcHint">
+        <fieldset>
+          <legend class="sr-only">Agregar tarea y horarios</legend>
+
+          <div class="grid">
+            <div class="field">
+              <label for="task">Tarea</label>
+              <input id="task" name="task" type="text" required placeholder="p. ej., Revisar logs" />
+            </div>
+
+            <div class="field">
+              <label for="start">Inicio (manual)</label>
+              <input id="start" name="start" class="time-input" type="time" step="60" inputmode="numeric" />
+            </div>
+
+            <div class="field">
+              <label for="end">Fin (manual)</label>
+              <input id="end" name="end" class="time-input" type="time" step="60" inputmode="numeric" />
+            </div>
+          </div>
+
+          <p id="calcHint" class="hint">
+            Puedes <strong>iniciar ahora</strong> una tarea (arranca con la hora actual) o crear registros manualmente con Inicio/Fin.
+          </p>
+
+          <output id="durationPreview" aria-live="polite" class="duration-preview">
+            0 min (0:00h)
+          </output>
+
+          <div class="actions">
+            <button id="startNowBtn" type="button">Iniciar ahora</button>
+            <button id="addBtn" type="submit">Agregar manual</button>
+            <button id="clearBtn" type="button">Borrar todo</button>
+          </div>
+        </fieldset>
+      </form>
+
+      <section aria-labelledby="listHdr" class="list-wrap">
+        <div class="toolbar">
+          <h2 id="listHdr">Registros</h2>
+          <div class="spacer"></div>
+          <button id="importBtn" type="button" aria-haspopup="dialog">Importar</button>
+          <button id="exportBtn" type="button">Exportar CSV</button>
+          <input id="fileInput" type="file" accept=".csv,.txt" hidden />
+        </div>
+
+        <ul id="entries" class="entries" aria-live="polite"></ul>
+
+        <div class="totals" aria-live="polite">
+          <strong>Total:</strong>
+          <span id="totalMinutes">0 min</span>
+          (<span id="totalPretty">0:00h</span>)
+          <button id="copyReportBtn" type="button" class="ghost" title="Copiar reporte final en horas">Copiar reporte</button>
+        </div>
+      </section>
+
+      <!-- Diálogo de importación -->
+      <dialog id="importDialog" aria-labelledby="importHdr">
+        <form method="dialog" class="import-form">
+          <h3 id="importHdr">Importar lista</h3>
+          <p class="hint">
+            • CSV: <code>tarea,inicio,fin</code> (24h, ej.: <code>Tarea A,09:00,10:30</code>)<br />
+            • TXT por líneas: <code>H:MMh Nombre de la tarea</code> (ej.: <code>1:30h Documentación</code>)
+          </p>
+          <div class="import-actions">
+            <button id="chooseFileBtn" type="button">Elegir archivo…</button>
+            <button id="closeImport" value="cancel">Cerrar</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+  </div>
+  <script src="popup.js" defer></script>
+</body>
+</html>

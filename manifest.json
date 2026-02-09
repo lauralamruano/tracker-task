@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Tracker Ally Task",
+  "version": "1.4.2",
+  "description": "Multiples tareas a la vez: iniciar/cerrar, minutos base. Inputs nativos, responsive, import/export. | Registros en formato HH:MMAM/PM.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tracker Ally Task"
+  },
+  "permissions": [
+    "storage"
+  ]
+}
