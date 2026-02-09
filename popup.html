@@ -1,97 +1,128 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html class="light" lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tiempo de Tareas</title>
-  <link rel="stylesheet" href="popup.css" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Time Tracker - Ultra Minimalist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="popup.css" />
 </head>
-<body>
-  <div class="shell">
-    <main>
-      <header class="topbar">
-        <h1 class="app-title">Tiempo de Tareas</h1>
-        <div class="switches">
-          <label class="switch">
-            <input id="clockToggle" type="checkbox" checked />
-            <span>Reloj</span>
-          </label>
-          <button id="expandBtn" type="button" class="ghost" title="Abrir en pestaña">↗</button>
+<body class="min-h-screen flex flex-col items-center">
+    <div class="w-full max-w-[390px] h-11 flex items-center justify-between px-8 text-xs font-semibold">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <span class="material-symbols-outlined !text-[14px]">signal_cellular_alt</span>
+            <span class="material-symbols-outlined !text-[14px]">wifi</span>
+            <span class="material-symbols-outlined !text-[14px]">battery_full</span>
         </div>
-      </header>
-
-      <form id="task-form" aria-describedby="calcHint">
-        <fieldset>
-          <legend class="sr-only">Agregar tarea y horarios</legend>
-
-          <div class="grid">
-            <div class="field">
-              <label for="task">Tarea</label>
-              <input id="task" name="task" type="text" required placeholder="p. ej., Revisar logs" />
+    </div>
+    
+    <main class="w-full max-w-[390px] px-6 py-4 space-y-12">
+        <header class="space-y-6">
+            <div class="flex justify-between items-baseline">
+                <h1 class="text-sm font-semibold tracking-tight uppercase opacity-40">Activity Log</h1>
+                <span class="text-xs text-muted">May 24</span>
             </div>
-
-            <div class="field">
-              <label for="start">Inicio (manual)</label>
-              <input id="start" name="start" class="time-input" type="time" step="60" inputmode="numeric" />
+            <div class="relative group">
+                <input class="w-full bg-transparent border-none p-0 focus:ring-0 placeholder:text-muted/50 text-base font-normal" placeholder="What are you working on?" type="text"/>
+                <button class="absolute right-0 top-1/2 -translate-y-1/2 text-accent opacity-60 hover:opacity-100 transition-opacity">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </button>
             </div>
-
-            <div class="field">
-              <label for="end">Fin (manual)</label>
-              <input id="end" name="end" class="time-input" type="time" step="60" inputmode="numeric" />
+        </header>
+        
+        <section class="space-y-10">
+            <div class="task-row flex items-center justify-between group transition-all">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--active-indicator)]"></span>
+                        <h2 class="text-base font-semibold">Design System Refinement</h2>
+                    </div>
+                    <div class="task-actions opacity-0 transition-opacity flex gap-4 ml-3.5">
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Pause</button>
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Stop</button>
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black opacity-40">More</button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-base font-semibold tabular-nums">10:42</span>
+                </div>
             </div>
-          </div>
-
-          <p id="calcHint" class="hint">
-            Puedes <strong>iniciar ahora</strong> una tarea (arranca con la hora actual) o crear registros manualmente con Inicio/Fin.
-          </p>
-
-          <output id="durationPreview" aria-live="polite" class="duration-preview">
-            0 min (0:00h)
-          </output>
-
-          <div class="actions">
-            <button id="startNowBtn" type="button">Iniciar ahora</button>
-            <button id="addBtn" type="submit">Agregar manual</button>
-            <button id="clearBtn" type="button">Borrar todo</button>
-          </div>
-        </fieldset>
-      </form>
-
-      <section aria-labelledby="listHdr" class="list-wrap">
-        <div class="toolbar">
-          <h2 id="listHdr">Registros</h2>
-          <div class="spacer"></div>
-          <button id="importBtn" type="button" aria-haspopup="dialog">Importar</button>
-          <button id="exportBtn" type="button">Exportar CSV</button>
-          <input id="fileInput" type="file" accept=".csv,.txt" hidden />
-        </div>
-
-        <ul id="entries" class="entries" aria-live="polite"></ul>
-
-        <div class="totals" aria-live="polite">
-          <strong>Total:</strong>
-          <span id="totalMinutes">0 min</span>
-          (<span id="totalPretty">0:00h</span>)
-          <button id="copyReportBtn" type="button" class="ghost" title="Copiar reporte final en horas">Copiar reporte</button>
-        </div>
-      </section>
-
-      <!-- Diálogo de importación -->
-      <dialog id="importDialog" aria-labelledby="importHdr">
-        <form method="dialog" class="import-form">
-          <h3 id="importHdr">Importar lista</h3>
-          <p class="hint">
-            • CSV: <code>tarea,inicio,fin</code> (24h, ej.: <code>Tarea A,09:00,10:30</code>)<br />
-            • TXT por líneas: <code>H:MMh Nombre de la tarea</code> (ej.: <code>1:30h Documentación</code>)
-          </p>
-          <div class="import-actions">
-            <button id="chooseFileBtn" type="button">Elegir archivo…</button>
-            <button id="closeImport" value="cancel">Cerrar</button>
-          </div>
-        </form>
-      </dialog>
+            
+            <div class="task-row flex items-center justify-between group transition-all opacity-80">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent/20"></span>
+                        <h2 class="text-base font-normal">Reviewing logs</h2>
+                    </div>
+                    <div class="task-actions opacity-0 transition-opacity flex gap-4 ml-3.5">
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Resume</button>
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black opacity-40">More</button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-base font-normal tabular-nums text-muted">1:30:00</span>
+                </div>
+            </div>
+            
+            <div class="task-row flex items-center justify-between group transition-all opacity-40">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined !text-[14px]">done</span>
+                        <h2 class="text-base font-normal">Morning Standup</h2>
+                    </div>
+                    <div class="task-actions opacity-0 transition-opacity flex gap-4 ml-6">
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Restart</button>
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Edit</button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-base font-normal tabular-nums">15:00</span>
+                </div>
+            </div>
+            
+            <div class="task-row flex items-center justify-between group transition-all opacity-80">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent/10"></span>
+                        <h2 class="text-base font-normal">Documentation update</h2>
+                    </div>
+                    <div class="task-actions opacity-0 transition-opacity flex gap-4 ml-3.5">
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black">Start</button>
+                        <button class="text-xs font-semibold tracking-tight uppercase hover:text-black opacity-40">More</button>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-base font-normal tabular-nums text-muted">0:00</span>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="pt-12 border-t border-accent/5">
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[10px] font-semibold tracking-widest uppercase text-muted mb-1">Total Daily</p>
+                    <p class="text-base font-semibold tabular-nums">1h 55m</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-semibold tracking-widest uppercase text-muted mb-1">Progress</p>
+                    <p class="text-base font-semibold tabular-nums">45%</p>
+                </div>
+            </div>
+            <div class="w-full h-[1px] bg-accent/5 mt-4">
+                <div class="h-full bg-accent w-[45%]"></div>
+            </div>
+        </footer>
     </main>
-  </div>
-  <script src="popup.js" defer></script>
+    
+    <div class="fixed bottom-2 w-32 h-1 bg-black/10 rounded-full left-1/2 -translate-x-1/2"></div>
+    <button class="fixed bottom-8 right-6 w-8 h-8 rounded-full flex items-center justify-center text-muted/40 hover:text-accent transition-colors" onclick="document.documentElement.classList.toggle('dark')">
+        <span class="material-symbols-outlined">contrast</span>
+    </button>
+    
+    <script src="popup.js" defer></script>
 </body>
 </html>
